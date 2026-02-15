@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: eleanor
+    runtime: static
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: STRAPI_URL
+        sync: false

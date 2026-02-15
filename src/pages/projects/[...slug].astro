@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getProjects, getProjectBySlug, getStrapiImageUrl } from '../../lib/strapi';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { slug: project.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const project = await getProjectBySlug(slug);
+
+if (!project) {
+  return Astro.redirect('/projects');
+}
+
+const { title, description, tags, date, url } = project;
+const image = getStrapiImageUrl(project.image);
+const parsedDate = new Date(date);
+---
+
+<Base title={title} description={description}>
+  <article class="max-w-3xl mx-auto px-6 py-20">
+    <a href="/projects" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">&larr; Back to projects</a>
+
+    <h1 class="mt-6 text-4xl font-bold tracking-tight">{title}</h1>
+    <p class="mt-2 text-gray-600">{description}</p>
+
+    <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+      <time datetime={parsedDate.toISOString()}>
+        {parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </time>
+      {url && (
+        <a href={url} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-colors">
+          View live &rarr;
+        </a>
+      )}
+    </div>
+
+    {tags && tags.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{tag}</span>
+        ))}
+      </div>
+    )}
+
+    {image && (
+      <img src={image} alt={title} class="mt-8 w-full rounded-lg" />
+    )}
+
+    {project.body && (
+      <div class="mt-10 prose prose-gray max-w-none" set:html={project.body} />
+    )}
+  </article>
+</Base>

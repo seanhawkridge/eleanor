@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getProjects, getHomepage, getStrapiImageUrl } from '../lib/strapi';
+
+const homepage = await getHomepage();
+const projects = await getProjects(4);
+---
+
+<Base title="Home">
+  <section class="max-w-5xl mx-auto px-6 py-20">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+      {homepage?.heading ?? "Hi, I'm Eleanor"}
+    </h1>
+    <p class="mt-4 text-lg text-gray-600 max-w-2xl">
+      {homepage?.intro ?? "Designer and creative director crafting thoughtful brand identities, digital experiences, and visual systems. Take a look at my recent work below."}
+    </p>
+    <a href="/projects" class="mt-6 inline-block text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+      View all projects &rarr;
+    </a>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-20">
+    <h2 class="text-2xl font-semibold mb-8">Recent Projects</h2>
+    <div class="grid gap-8 sm:grid-cols-2">
+      {projects.map((project) => (
+        <ProjectCard
+          title={project.title}
+          description={project.description}
+          image={getStrapiImageUrl(project.image)}
+          tags={project.tags ?? []}
+          slug={project.slug}
+        />
+      ))}
+    </div>
+  </section>
+</Base>
