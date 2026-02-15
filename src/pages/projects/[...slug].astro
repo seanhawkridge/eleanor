@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getProjects, getProjectBySlug, getStrapiImageUrl } from '../../lib/strapi';
+import { getProjects, getProjectBySlug, getStrapiImageUrl, getTagNames } from '../../lib/strapi';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -17,7 +17,8 @@ if (!project) {
   return Astro.redirect('/projects');
 }
 
-const { title, description, tags, date, url } = project;
+const { title, description, date, url } = project;
+const tags = getTagNames(project.tags);
 const image = getStrapiImageUrl(project.image);
 const parsedDate = new Date(date);
 ---

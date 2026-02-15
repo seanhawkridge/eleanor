@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import { getProjects, getStrapiImageUrl } from '../../lib/strapi';
+import { getProjects, getStrapiImageUrl, getTagNames } from '../../lib/strapi';
 
 const projects = await getProjects();
 ---
@@ -17,7 +17,7 @@ const projects = await getProjects();
           title={project.title}
           description={project.description}
           image={getStrapiImageUrl(project.image)}
-          tags={project.tags ?? []}
+          tags={getTagNames(project.tags)}
           slug={project.slug}
         />
       ))}

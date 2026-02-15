@@ -38,7 +38,7 @@ export interface StrapiProject {
   title: string;
   description: string;
   image?: { url: string } | null;
-  tags: string[] | null;
+  tags: { id: number; name: string }[] | null;
   date: string;
   url?: string | null;
   slug: string;
@@ -53,7 +53,8 @@ export interface StrapiHomepage {
 export async function getProjects(limit?: number) {
   const params: Record<string, string> = {
     'sort': 'date:desc',
-    'populate': '*',
+    'populate[image][fields][0]': 'url',
+    'populate[tags][fields][0]': 'name',
     'status': 'published',
   };
   if (limit) {
@@ -66,7 +67,8 @@ export async function getProjects(limit?: number) {
 export async function getProjectBySlug(slug: string) {
   const { data } = await fetchAPI<StrapiProject[]>('/projects', {
     'filters[slug][$eq]': slug,
-    'populate': '*',
+    'populate[image][fields][0]': 'url',
+    'populate[tags][fields][0]': 'name',
     'status': 'published',
   });
   return data[0] ?? null;
@@ -77,6 +79,10 @@ export async function getHomepage() {
     'status': 'published',
   });
   return data;
+}
+
+export function getTagNames(tags: { id: number; name: string }[] | null): string[] {
+  return tags?.map((tag) => tag.name) ?? [];
 }
 
 export function getStrapiImageUrl(image: { url: string } | null | undefined): string | undefined {
